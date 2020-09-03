@@ -27,6 +27,11 @@
 
 #ifdef CONFIG_EXAMPLE_CONNECT_IPV6
 #define CONNECTED_BITS (GOT_IPV4_BIT | GOT_IPV6_BIT)
+#if defined(CONFIG_EXAMPLE_CONNECT_IPV6_PREF_LOCAL_LINK)
+#define EXAMPLE_CONNECT_PREFERRED_IPV6_TYPE 0
+#elif defined(CONFIG_EXAMPLE_CONNECT_IPV6_PREF_GLOBAL)
+#define EXAMPLE_CONNECT_PREFERRED_IPV6_TYPE 1
+#endif
 #else
 #define CONNECTED_BITS (GOT_IPV4_BIT)
 #endif
@@ -50,7 +55,7 @@ static void on_wifi_disconnect(void *arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "Wi-Fi disconnected, trying to reconnect...");
     if (event->reason == WIFI_REASON_BASIC_RATE_NOT_SUPPORT) {
         /*Switch to 802.11 bgn mode */
-        esp_wifi_set_protocol(ESP_IF_WIFI_STA, WIFI_PROTOCAL_11B | WIFI_PROTOCAL_11G | WIFI_PROTOCAL_11N);
+        esp_wifi_set_protocol(ESP_IF_WIFI_STA, WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
     }
     ESP_ERROR_CHECK(esp_wifi_connect());
 }
@@ -78,7 +83,13 @@ static void on_got_ipv6(void *arg, esp_event_base_t event_base,
 {
     ip_event_got_ip6_t *event = (ip_event_got_ip6_t *)event_data;
     memcpy(&s_ipv6_addr, &event->ip6_info.ip, sizeof(s_ipv6_addr));
-    xEventGroupSetBits(s_connect_event_group, GOT_IPV6_BIT);
+    if (EXAMPLE_CONNECT_PREFERRED_IPV6_TYPE) {
+        if (ip6_addr_isglobal(&s_ipv6_addr)) {
+            xEventGroupSetBits(s_connect_event_group, GOT_IPV6_BIT);
+        }
+    } else {
+        xEventGroupSetBits(s_connect_event_group, GOT_IPV6_BIT);
+    }
 }
 
 #endif // CONFIG_EXAMPLE_CONNECT_IPV6

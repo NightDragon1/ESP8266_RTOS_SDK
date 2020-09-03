@@ -28,7 +28,7 @@
 #include "esp8266/rom_functions.h"
 #include "driver/rtc.h"
 #include "rom/uart.h"
-#include "internal/phy_init_data.h"
+#include "esp_private/phy_init_data.h"
 
 #define FRC2_LOAD               (0x60000620)
 #define FRC2_COUNT              (0x60000624)
@@ -146,7 +146,7 @@ static inline uint32_t sleep_rtc_ticks(pm_soc_clk_t *clk)
 
 static inline void update_soc_clk(pm_soc_clk_t *clk)
 {
-    extern uint32_t WdevTimOffSet;
+    extern uint64_t WdevTimOffSet;
 
     uint32_t slept_us;
 
@@ -426,4 +426,9 @@ esp_err_t esp_pm_configure(const void* vconfig)
         s_sleep_mode = ESP_CPU_WAIT;
     }
     return ESP_OK;
+}
+
+uint32_t rtc_time_get(void)
+{
+    return REG_READ(RTC_SLP_CNT_VAL);
 }

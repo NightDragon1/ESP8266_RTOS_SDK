@@ -87,7 +87,7 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 
         if (event->reason == WIFI_REASON_BASIC_RATE_NOT_SUPPORT) {
             /*Switch to 802.11 bgn mode */
-            esp_wifi_set_protocol(ESP_IF_WIFI_STA, WIFI_PROTOCAL_11B | WIFI_PROTOCAL_11G | WIFI_PROTOCAL_11N);
+            esp_wifi_set_protocol(ESP_IF_WIFI_STA, WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
         }
         esp_wifi_connect();
         xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
@@ -101,7 +101,6 @@ static void initialise_wifi(void)
     unsigned int ca_pem_bytes = ca_pem_end - ca_pem_start;
     unsigned int client_crt_bytes = client_crt_end - client_crt_start;
     unsigned int client_key_bytes = client_key_end - client_key_start;
-    esp_wpa2_config_t config = WPA2_CONFIG_INIT_DEFAULT();
 
     tcpip_adapter_init();
     wifi_event_group = xEventGroupCreate();
@@ -129,7 +128,7 @@ static void initialise_wifi(void)
         ESP_ERROR_CHECK(esp_wifi_sta_wpa2_ent_set_password((uint8_t*)EXAMPLE_EAP_PASSWORD, strlen(EXAMPLE_EAP_PASSWORD)));
     }
 
-    ESP_ERROR_CHECK(esp_wifi_sta_wpa2_ent_enable(&config));
+    ESP_ERROR_CHECK(esp_wifi_sta_wpa2_ent_enable());
     ESP_ERROR_CHECK(esp_wifi_start());
 }
 

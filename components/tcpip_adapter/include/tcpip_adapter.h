@@ -168,6 +168,7 @@ typedef enum{
 } tcpip_adapter_option_mode_t;
 
 typedef enum{
+    TCPIP_ADAPTER_SUBNET_MASK                   = 1,    /**< network mask */
     TCPIP_ADAPTER_DOMAIN_NAME_SERVER            = 6,    /**< domain name server */
     TCPIP_ADAPTER_ROUTER_SOLICITATION_ADDRESS   = 32,   /**< solicitation router address */
     TCPIP_ADAPTER_REQUESTED_IP_ADDRESS          = 50,   /**< request IP address pool */
@@ -429,6 +430,17 @@ esp_err_t tcpip_adapter_create_ip6_linklocal(tcpip_adapter_if_t tcpip_if);
  *         ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS
  */
 esp_err_t tcpip_adapter_get_ip6_linklocal(tcpip_adapter_if_t tcpip_if, ip6_addr_t *if_ip6);
+
+/**
+ * @brief get interface's global IPv6 information
+ *
+ * @param[in]  tcpip_if: the interface which we want to set IP information
+ * @param[in]  if_ip6: If successful, IPv6 information will be returned in this argument.
+ *
+ * @return ESP_OK
+ *         ESP_ERR_TCPIP_ADAPTER_INVALID_PARAMS
+ */
+esp_err_t tcpip_adapter_get_ip6_global(tcpip_adapter_if_t tcpip_if, ip6_addr_t *if_ip6);
 #endif
 
 #if 0
