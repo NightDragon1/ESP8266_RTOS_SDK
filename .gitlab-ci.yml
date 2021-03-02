@@ -25,6 +25,7 @@ before_script:
     - *apply_bot_filter
     - echo "Not setting up GitLab key, fetching submodules ..."
     - git submodule update --init --recursive
+    - tools/idf_tools.py --non-interactive install && eval "$(tools/idf_tools.py --non-interactive export)" || exit 1
     - source tools/ci/configure_ci_environment.sh
 
 .build_template: &build_template
@@ -40,6 +41,7 @@ build_ssc:
       - ./SSC/ssc_bin
     expire_in: 6 mos
   script:
+    - tools/idf_tools.py --non-interactive install && eval "$(tools/idf_tools.py --non-interactive export)" || exit 1
     - git clone $GITLAB_SSH_SERVER/yinling/SSC.git
     - cd SSC
     # try checkout same branch
@@ -113,6 +115,12 @@ build_docs:
     when: always
     paths:
       - $LOG_PATH
+      - ./build_examples/example_builds/*/build/bootloader/*.bin
+      - ./build_examples/example_builds/*/build/partition_table/*.bin
+      - ./build_examples/example_builds/*/build/*.bin
+      - ./build_examples/example_builds/*/build/*.elf
+      - ./build_examples/example_builds/*/build/*.map
+      - ./build_examples/example_builds/*/build/*.config
     expire_in: 2 days
   variables:
     LOG_PATH: "$CI_PROJECT_DIR/log_examples_make"
@@ -140,6 +148,14 @@ build_docs:
     when: always
     paths:
       - $LOG_PATH
+      - ./build_examples_cmake/example_builds/*/build/bootloader/*.bin
+      - ./build_examples_cmake/example_builds/*/build/partition_table/*.bin
+      - ./build_examples_cmake/example_builds/*/build/*.bin
+      - ./build_examples_cmake/example_builds/*/build/*.elf
+      - ./build_examples_cmake/example_builds/*/build/*.map
+      - ./build_examples_cmake/example_builds/*/build/*.config
+      - ./build_examples_cmake/example_builds/*/build/flasher_args.json
+      - ./build_examples_cmake/example_builds/*/sdkconfig
     expire_in: 2 days
   variables:
     LOG_PATH: "$CI_PROJECT_DIR/log_examples_cmake"
